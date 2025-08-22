@@ -1,0 +1,43 @@
+services:
+  mosquitto:
+    image: registry.cedalo.com/mosquitto/mosquitto:3.1
+    ports:
+      - 1883:1883 # MQTT no TLS
+      - 8883:8883 # MQTT with TLS (needs to be configured in mosquitto.conf)
+      - 8090:8090 # Websocket no TLS (needs to be configured in mosquitto.conf)
+    networks:
+      - cedalo-platform
+    environment:
+        MOSQUITTO_DYNSEC_PASSWORD: ${MOSQUITTO_DYNSEC_PASSWORD}
+        CEDALO_LICENSE_KEY: ${CEDALO_LICENSE_KEY}
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./license:/mosquitto/license/
+  platform:
+    image: registry.cedalo.com/platform/enterprise:3.1
+    platform: linux/amd64
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    depends_on:
+      - mosquitto
+    networks:
+      - cedalo-platform
+    environment:
+      API_INTERNAL_HOST: platform
+      BASE_URL: http://localhost:3000
+      NEXTAUTH_URL: http://localhost:3000
+      AUTH_SECRET: FtdRXgOYeFBZo-0k
+      SETUP_TYPE: single
+      CEDALO_LICENSE_KEY: ${CEDALO_LICENSE_KEY}
+
+    volumes:
+      - ./platform/data:/data
+      # map unix socket for audit trail:
+      - /dev/log:/dev/log
+networks:
+  cedalo-platform:
+    name: cedalo-platform
+    driver: bridge

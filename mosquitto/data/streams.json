@@ -1,0 +1,75 @@
+{
+	"version":	1,
+	"streams":	[{
+			"streamname":	"alert",
+			"sourcetopic":	"cedalo/powerplant/plants/windmill",
+			"targettopic":	"windmill/alert",
+			"textdescription":	"Publish location and speed alerts when the speed exceeds 12 m/s",
+			"targetqos":	0,
+			"ttl":	86400,
+			"active":	false,
+			"process":	true,
+			"persist":	true,
+			"query":	{
+				"select":	[{
+						"source":	"[Location]",
+						"target":	"[Location]"
+					}, {
+						"source":	"[Machine Data][Speed]",
+						"target":	"[Speed]",
+						"alias":	"Speed"
+					}],
+				"where":	[{
+						"left":	"[Machine Data][Speed]",
+						"right":	12,
+						"operator":	">"
+					}]
+			}
+		}, {
+			"streamname":	"functions",
+			"sourcetopic":	"cedalo/powerplant/plants/windmill",
+			"targettopic":	"windmill/functions",
+			"textdescription":	"Publish the current min/max speed, and sum and count of speeds, resetting every 60 seconds.",
+			"targetqos":	-1,
+			"ttl":	3600,
+			"active":	false,
+			"process":	true,
+			"persist":	true,
+			"query":	{
+				"select":	[{
+						"source":	"[Machine Data][Speed]",
+						"target":	"[MaxSpeed]",
+						"function":	{
+							"name":	"max"
+						}
+					}, {
+						"source":	"[Machine Data][Speed]",
+						"target":	"[MinSpeed]",
+						"function":	{
+							"name":	"min"
+						}
+					}, {
+						"source":	"[Machine Data][Speed]",
+						"target":	"[Count]",
+						"function":	{
+							"name":	"count"
+						}
+					}, {
+						"source":	"[Machine Data][Speed]",
+						"target":	"[Sum]",
+						"function":	{
+							"name":	"sum"
+						}
+					}, {
+						"source":	"timestamp",
+						"target":	"[Interval]",
+						"alias":	"timeInterval",
+						"function":	{
+							"intervalsize":	60,
+							"intervaloffset":	0,
+							"name":	"time_bucket"
+						}
+					}]
+			}
+		}]
+}
