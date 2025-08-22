@@ -28,6 +28,7 @@ services:
       API_INTERNAL_HOST: platform
       BASE_URL: http://localhost:3000
       NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: FtdRXgOYeFBZo-0k
       AUTH_SECRET: FtdRXgOYeFBZo-0k
       SETUP_TYPE: single
       CEDALO_LICENSE_KEY: ${CEDALO_LICENSE_KEY}
