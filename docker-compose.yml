@@ -11,8 +11,8 @@ services:
         MOSQUITTO_DYNSEC_PASSWORD: ${MOSQUITTO_DYNSEC_PASSWORD}
         CEDALO_LICENSE_KEY: ${CEDALO_LICENSE_KEY}
     volumes:
-      -  mosquitto/config:/mosquitto/config
-      -  mosquitto/data:/mosquitto/data
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
   platform:
     image: registry.cedalo.com/platform/enterprise:3.1
     platform: linux/amd64
@@ -33,9 +33,8 @@ services:
       CEDALO_LICENSE_KEY: ${CEDALO_LICENSE_KEY}
 
     volumes:
-      -  platform/data:/data
+      - ./platform/data:/data
       # map unix socket for audit trail:
-      -  dev/log:/dev/log
 networks:
   cedalo-platform:
     name: cedalo-platform
